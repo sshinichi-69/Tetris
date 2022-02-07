@@ -1,0 +1,9 @@
+Grid:
+.: has nothing
+o: has normal tetromino
+-: has horizontal tetromino
+1: has 1-hp block
+Link:
+|: fall vertical
+v: end fall
+x: no fall

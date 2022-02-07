@@ -1,0 +1,18 @@
+grid:
+ oo1oo
+ o111o
+oo111oo
+1oo1ooo
+o1o1o1o
+ o1o1o
+link:
+ |||||
+ |||||
+|||||||
+|||||||
+v|||||v
+ vvvvv
+goal:
+x2: 6
+move:
+21

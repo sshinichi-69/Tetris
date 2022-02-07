@@ -1,0 +1,16 @@
+grid:
+ooooo
+ooooo
+ooooo
+ooooo
+ooooo
+link:
+|||||
+|||||
+|||||
+|||||
+vvvvv
+goal:
+blue: 15
+move:
+15
