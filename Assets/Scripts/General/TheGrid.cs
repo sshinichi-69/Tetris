@@ -20,8 +20,8 @@ public class TheGrid : MonoBehaviour
     }
     public class Link
     {
-        Node head;
-        Node tail;
+        public Node head;
+        public Node tail;
         public Link()
         {
             head = null;
@@ -73,7 +73,7 @@ public class TheGrid : MonoBehaviour
     {
         yield return new WaitForSeconds(0.01f);
         GetComponent<Set_Level>().setGrid(ref grid);
-        // GetComponent<Set_Level>().setLink(ref gridLink);
+        GetComponent<Set_Level>().setLink(ref gridLink);
     }
 
     public void CheckForLines()
@@ -201,27 +201,55 @@ public class TheGrid : MonoBehaviour
     IEnumerator _RowDown(int j)
     {
         yield return new WaitForSeconds(1);
-        RowDown(j);
+        for (int i = 0; i < gridLink.Length; i++)
+        {
+            RowDown(gridLink[i], j);
+        }
     }
 
-    void RowDown(int j)
+    void RowDown(Link gl, int j)
     {
-        for (int y = j; y < height - 1; y++)
+        Node cur = gl.head;
+        Node next = gl.head;
+        while (cur != null)
         {
-            for (int i = 0; i < width; i++)
+            while (next != null)
             {
-                if (grid[i, y + 1] != null)
+                if (next.y != j)
                 {
-                    int[] nextBlockPos = {0, 0};
-                    if (!grid[nextBlockPos[0], nextBlockPos[1]].CompareTag("Wall")
-                        && !grid[nextBlockPos[0], nextBlockPos[1]].CompareTag("BrickA")
-                        && grid[i, y] == null)
+                    break;
+                }
+                next = next.next;
+            }
+            if (cur != next)
+            {
+                if (next == null)
+                {
+                    grid[cur.x, cur.y] = null;
+                }
+                else
+                {
+                    if (grid[cur.x, cur.y] != null)
                     {
-                        grid[i, y] = grid[nextBlockPos[0], nextBlockPos[1]];
-                        grid[nextBlockPos[0], nextBlockPos[1]] = null;
-                        //grid[i, y].transform.position += getNextVector(i, y);
+                        break;
+                    }
+                    if (grid[next.x, next.y] != null)
+                    {
+                        if (grid[next.x, next.y].CompareTag("Wall")
+                            || grid[next.x, next.y].CompareTag("BrickA"))
+                        {
+                            break;
+                        }
+                        grid[cur.x, cur.y] = grid[next.x, next.y];
+                        grid[next.x, next.y] = null;
+                        grid[cur.x, cur.y].transform.position += new Vector3(cur.x - next.x, cur.y - next.y, 0);
                     }
                 }
+            }
+            cur = cur.next;
+            if (next != null)
+            {
+                next = next.next;
             }
         }
     }

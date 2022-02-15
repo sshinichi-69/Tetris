@@ -138,6 +138,7 @@ public class Set_Level : MonoBehaviour
                 gridLink = new TheGrid.Link[width];
                 for (int i = 0; i < width; i++)
                 {
+                    gridLink[i] = new TheGrid.Link();
                     for (int j = 0; j < height; j++)
                     {
                         if (!((i == 2 || i == 8) && j == 0))
@@ -151,6 +152,7 @@ public class Set_Level : MonoBehaviour
                 gridLink = new TheGrid.Link[width];
                 for (int i = 0; i < width; i++)
                 {
+                    gridLink[i] = new TheGrid.Link();
                     for (int j = 0; j < height; j++)
                     {
                         gridLink[i].addNode(i, j);

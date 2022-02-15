@@ -285,6 +285,7 @@ MonoBehaviour:
   score: 15
   speed: 1
   maxBlockLeft: 15
+  isWin: 0
 --- !u!114 &756937309
 MonoBehaviour:
   m_ObjectHideFlags: 0
