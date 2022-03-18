@@ -10,6 +10,7 @@ public class Set_Level : MonoBehaviour
     int width = 11;
     public GameObject Block;
     public GameObject Brick1;
+    public GameObject HorizontalBlock;
     // color: 0 - blue; 1 - purple; 2 - orange; 3 - green
     Color[] color;
     // Start is called before the first frame update
@@ -22,142 +23,8 @@ public class Set_Level : MonoBehaviour
         scene = SceneManager.GetActiveScene().buildIndex;
         switch (scene)
         {
-            case 5: case 6: case 7:
+            case 5: case 6: case 7: case 8:
                 color = new Color[4] { blue, green, orange, purple };
-                break;
-        }
-    }
-
-    public void setGrid(ref Transform[,] grid)
-    {
-        switch (scene)
-        {
-            case 5:
-                for (int i = 3; i < 8; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        setBlock(ref grid, i, j, Block, false);
-                    }
-                }
-                break;
-            case 6:
-                for (int i = 2; i < 8; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (j == 0)
-                        {
-                            if (i > 2 && i < 7)
-                            {
-                                setBlock(ref grid, i, j, Brick1, true);
-                            }
-                            else
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                        }
-                        else if (j > 4)
-                        {
-                            setBlock(ref grid, i, j, Block, false);
-                        }
-                        else
-                        {
-                            setBlock(ref grid, i, j, Brick1, true);
-                        }
-                    }
-                }
-                break;
-            case 7:
-                for (int i = 2; i < 9; i++)
-                {
-                    for (int j = 0; j < 6; j++)
-                    {
-                        if (i == 2)
-                        {
-                            if (j == 2)
-                            {
-                                setBlock(ref grid, i, j, Brick1, true);
-                            }
-                            else if (j == 1 || j == 3)
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                        }
-                        else if (i == 5)
-                        {
-                            if (j == 0)
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                            else
-                            {
-                                setBlock(ref grid, i, j, Brick1, true);
-                            }
-                        }
-                        else if (i == 8)
-                        {
-                            if (j > 0 && j < 4)
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                        }
-                        else if (i == 3 || i == 7)
-                        {
-                            if (j == 1)
-                            {
-                                setBlock(ref grid, i, j, Brick1, true);
-                            }
-                            else
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                        }
-                        else
-                        {
-                            if (j == 1 || j == 2 || j == 5)
-                            {
-                                setBlock(ref grid, i, j, Block, false);
-                            }
-                            else
-                            {
-                                setBlock(ref grid, i, j, Brick1, true);
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-    }
-
-    public void setLink(ref TheGrid.Link[] gridLink)
-    {
-        switch (scene)
-        {
-            case 7:
-                gridLink = new TheGrid.Link[width];
-                for (int i = 0; i < width; i++)
-                {
-                    gridLink[i] = new TheGrid.Link();
-                    for (int j = 0; j < height; j++)
-                    {
-                        if (!((i == 2 || i == 8) && j == 0))
-                        {
-                            gridLink[i].addNode(i, j);
-                        }
-                    }
-                }
-                break;
-            default:
-                gridLink = new TheGrid.Link[width];
-                for (int i = 0; i < width; i++)
-                {
-                    gridLink[i] = new TheGrid.Link();
-                    for (int j = 0; j < height; j++)
-                    {
-                        gridLink[i].addNode(i, j);
-                    }
-                }
                 break;
         }
     }
@@ -182,5 +49,101 @@ public class Set_Level : MonoBehaviour
     {
         int i = Random.Range(0, color.Length);
         return color[i];
+    }
+
+    public void setGrid(ref Transform[,] grid, ref TheGrid.Link[] gridLink, ref string goal)
+    {
+        string name = (scene - 4).ToString();
+        string address = @"D:\Unity Files\Tetris\Assets\Data\" + name + ".txt";
+        string[] lines = System.IO.File.ReadAllLines(address);
+        int counter = 0;
+        int gridWidth, gridHeight = -1;
+        int xStart = -1;
+        int nLink = 0;
+        foreach (string line in lines)
+        {
+            if (counter == 0)
+            {
+                string[] substr = line.Split(' ');
+                gridWidth = int.Parse(substr[0]);
+                gridHeight = int.Parse(substr[1]);
+                xStart = (width - 1) / 2 - gridWidth / 2;
+            }
+            else if (counter <= gridHeight)
+            {
+                for (int i = 0; i < line.Length; i++)
+                {
+                    switch (line[i])
+                    {
+                        case 'o':
+                            setBlock(ref grid, xStart + i, gridHeight - counter, Block, false);
+                            break;
+                        case '1':
+                            setBlock(ref grid, xStart + i, gridHeight - counter, Brick1, true);
+                            break;
+                        case '-':
+                            setBlock(ref grid, xStart + i, gridHeight - counter, HorizontalBlock, true);
+                            break;
+                    }
+                }
+            }
+            else if (counter == gridHeight + 1)
+            {
+                nLink = int.Parse(line);
+                gridLink = new TheGrid.Link[nLink];
+            }
+            else if (counter < gridHeight + nLink + 2)
+            {
+                gridLink[counter - gridHeight - 2] = new TheGrid.Link();
+                string[] substr = line.Split(' ');
+                int[] headList = new int[4];
+                for (int i = 0; i + 3 < substr.Length; i += 2)
+                {
+                    for (int j = 0; j < headList.Length; j++)
+                    {
+                        headList[j] = int.Parse(substr[i + j]);
+                    }
+                    if (headList[0] == headList[2])
+                    {
+                        if (headList[1] < headList[3])
+                        {
+                            for (int j = headList[1]; j <= headList[3]; j++)
+                            {
+                                gridLink[counter - gridHeight - 2].addNode(headList[0], j);
+                            }
+                        }
+                        else
+                        {
+                            for (int j = headList[1]; j >= headList[3]; j--)
+                            {
+                                gridLink[counter - gridHeight - 2].addNode(headList[0], j);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (headList[0] < headList[2])
+                        {
+                            for (int j = headList[0]; j <= headList[2]; j++)
+                            {
+                                gridLink[counter - gridHeight - 2].addNode(j, headList[1]);
+                            }
+                        }
+                        else
+                        {
+                            for (int j = headList[0]; j >= headList[2]; j--)
+                            {
+                                gridLink[counter - gridHeight - 2].addNode(j, headList[1]);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                goal = line;
+            }
+            counter++;
+        }
     }
 }

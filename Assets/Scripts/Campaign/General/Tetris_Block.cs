@@ -19,7 +19,7 @@ public class Tetris_Block : MonoBehaviour
         {
             FindObjectOfType<Set_Data>().BeStarted();
         }
-        fallTime = 1 - (FindObjectOfType<TheGrid>().speed - 1) * 0.1f;
+        fallTime = FindObjectOfType<TheGrid>().fallTime;
         StartCoroutine(setColor());
     }
 

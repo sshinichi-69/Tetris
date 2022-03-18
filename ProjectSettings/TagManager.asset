@@ -7,6 +7,7 @@ TagManager:
   - Tetromino1
   - Wall
   - BrickA
+  - Horizontal
   layers:
   - Default
   - TransparentFX

@@ -1,9 +1,11 @@
 Grid:
-.: has nothing
 o: has normal tetromino
+1: has 1-hp brick
+.: has nothing
 -: has horizontal tetromino
-1: has 1-hp block
-Link:
-|: fall vertical
-v: end fall
-x: no fall
+Link
+a b c d e f ...: (a b) to (c d), (c d) to (e f)...
+Goal:
+blue: Get some blue blocks to win
+brick1: Destroy all 1-hp brick to win
+x2: Get some double combo or more to win

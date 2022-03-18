@@ -12,7 +12,7 @@ public class Set_Data : MonoBehaviour
     public Text TextTetroLeft;
     public Text TextSpeed;
     public bool start = true;
-    int lastScene = 7;
+    int lastScene = 8;
     public void SetScore(int score)
     {
         TextScore.text = score.ToString();
@@ -50,6 +50,8 @@ public class Set_Data : MonoBehaviour
     public void SetVictory()
     {
         TextGameOver.text = "VICTORY";
+        int scene = SceneManager.GetActiveScene().buildIndex;
+        GetComponent<ControlScenes>().SaveLevel(scene);
         StartCoroutine(Victory());
     }
 

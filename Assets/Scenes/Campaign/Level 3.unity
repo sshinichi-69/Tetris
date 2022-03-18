@@ -557,6 +557,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Block: {fileID: 3970187097504135170, guid: 1c4cc6889378ed64f9fb384ed5be40ce, type: 3}
   Brick1: {fileID: 3970187097504135170, guid: d6d2c03584bb99c4992483e9ba9007f9, type: 3}
+  HorizontalBlock: {fileID: 923896331502329310, guid: 902a1cc93cb678d40848a3d52bc49533, type: 3}
 --- !u!114 &726584722
 MonoBehaviour:
   m_ObjectHideFlags: 0

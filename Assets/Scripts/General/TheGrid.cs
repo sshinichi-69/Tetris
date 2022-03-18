@@ -47,18 +47,18 @@ public class TheGrid : MonoBehaviour
     public int width = 11;
     private Transform[,] grid;
     Link[] gridLink;
+    string goal;
     public int score;
     public int speed = 1;
+    public float fallTime = 1f;
     int blockLeft;
     public int maxBlockLeft;
-    int scene;
     public bool isWin = false;
     Color blue = new Color(0, 0, 255);
     int combo = 0;
     // Start is called before the first frame update
     void Start()
     {
-        scene = SceneManager.GetActiveScene().buildIndex;
         grid = new Transform[width, height];
         if (GetComponent<Set_Data>().start)
         {
@@ -72,8 +72,7 @@ public class TheGrid : MonoBehaviour
     IEnumerator setLevel()
     {
         yield return new WaitForSeconds(0.01f);
-        GetComponent<Set_Level>().setGrid(ref grid);
-        GetComponent<Set_Level>().setLink(ref gridLink);
+        GetComponent<Set_Level>().setGrid(ref grid, ref gridLink, ref goal);
     }
 
     public void CheckForLines()
@@ -82,21 +81,21 @@ public class TheGrid : MonoBehaviour
         {
             if (HasLine(j))
             {
-                switch (scene)
+                switch (goal)
                 {
-                    case 5:
+                    case "blue":
                         AddScore(j);
                         break;
-                    case 7:
+                    case "x2":
                         combo++;
                         AddScore(j);
                         break;
                 }
                 DeleteLine(j);
                 StartCoroutine(_RowDown(j));
-                switch (scene)
+                switch (goal)
                 {
-                    case 6:
+                    case "brick1":
                         StartCoroutine(AddScore());
                         break;
                 }
@@ -130,11 +129,17 @@ public class TheGrid : MonoBehaviour
         if (grid[a, j] != null)
         {
             string tag = grid[a, j].tag;
+            // Destroy tetromino or brick in the row
             if (tag != "Wall")
             {
                 Destroy(grid[a, j].gameObject);
+                if (tag == "Horizontal")
+                {
+                    StartCoroutine(HorizontalBonus(a - 1, a + 1, j));
+                }
                 grid[a, j] = null;
             }
+            // Destroy brick which is adjacency the destroyed tetromino
             if (j > 0)
             {
                 if (grid[a, j - 1] != null && tag == "Untagged")
@@ -157,17 +162,19 @@ public class TheGrid : MonoBehaviour
                     }
                 }
             }
-            a++;
         }
+        a++;
         // b
         if (grid[b, j] != null)
         {
             string tag = grid[b, j].tag;
+            // Destroy tetromino or brick in the row
             if (tag != "Wall")
             {
                 Destroy(grid[b, j].gameObject);
                 grid[b, j] = null;
             }
+            // Destroy brick which is adjacency the destroyed tetromino
             if (j > 0)
             {
                 if (grid[b, j - 1] != null && tag == "Untagged")
@@ -190,11 +197,54 @@ public class TheGrid : MonoBehaviour
                     }
                 }
             }
-            b--;
         }
+        b--;
         if (a <= b)
         {
             StartCoroutine(DeleteBlock(a, b, j));
+        }
+    }
+
+    IEnumerator HorizontalBonus(int a, int b, int j)
+    {
+        yield return new WaitForSeconds(0.1f);
+        if (a > -1)
+        {
+            if (grid[a, j] != null)
+            {
+                string tag = grid[a, j].tag;
+                if (tag != "Wall")
+                {
+                    Destroy(grid[a, j].gameObject);
+                    if (tag == "Horizontal")
+                    {
+                        StartCoroutine(HorizontalBonus(a - 1, a + 1, j));
+                    }
+                    grid[a, j] = null;
+                }
+            }
+        }
+        a--;
+        if (b < width)
+        {
+            if (grid[b, j] != null)
+            {
+                string tag = grid[b, j].tag;
+                if (tag != "Wall")
+                {
+                    Destroy(grid[b, j].gameObject);
+                    if (tag == "Horizontal")
+                    {
+                        StartCoroutine(HorizontalBonus(b - 1, b + 1, j));
+                    }
+                    grid[b, j] = null;
+                }
+            }
+        }
+        b++;
+        if (a > -1 || b < width)
+        {
+            StartCoroutine(HorizontalBonus(a - 1, b + 1, j));
         }
     }
 
@@ -256,31 +306,12 @@ public class TheGrid : MonoBehaviour
 
     void AddScore(int j)
     {
-        switch (scene)
+        if (goal == "blue")
         {
-            case 5:
-                for (int i = 0; i < width; i++)
+            for (int i = 0; i < width; i++)
+            {
+                if (grid[i, j].gameObject.GetComponent<SpriteRenderer>().color == blue)
                 {
-                    if (grid[i, j].gameObject.GetComponent<SpriteRenderer>().color == blue)
-                    {
-                        if (score > 0)
-                        {
-                            score--;
-                            GetComponent<Set_Data>().SetScore(score);
-                            if (score == 0)
-                            {
-                                GetComponent<Set_Data>().SetVictory();
-                                isWin = true;
-                                return;
-                            }
-                        }
-                    }
-                }
-                break;
-            case 7:
-                if (combo == 2)
-                {
-                    combo = 0;
                     if (score > 0)
                     {
                         score--;
@@ -293,24 +324,39 @@ public class TheGrid : MonoBehaviour
                         }
                     }
                 }
-                break;
+            }
+        }
+        else if (goal == "x2")
+        {
+            if (combo == 2)
+            {
+                combo = 0;
+                if (score > 0)
+                {
+                    score--;
+                    GetComponent<Set_Data>().SetScore(score);
+                    if (score == 0)
+                    {
+                        GetComponent<Set_Data>().SetVictory();
+                        isWin = true;
+                        return;
+                    }
+                }
+            }
         }
     }
 
     IEnumerator AddScore()
     {
         yield return new WaitForSeconds(1);
-        switch (scene)
-        {
-            case 6:
-                score = GameObject.FindGameObjectsWithTag("BrickA").Length;
-                GetComponent<Set_Data>().SetScore(score);
-                if (score == 0)
-                {
-                    GetComponent<Set_Data>().SetVictory();
-                    isWin = true;
-                }
-                break;
+        if (goal == "brick1") {
+            score = GameObject.FindGameObjectsWithTag("BrickA").Length;
+            GetComponent<Set_Data>().SetScore(score);
+            if (score == 0)
+            {
+                GetComponent<Set_Data>().SetVictory();
+                isWin = true;
+            }
         }
     }
 
@@ -333,11 +379,9 @@ public class TheGrid : MonoBehaviour
         blockLeft--;
         if (blockLeft == 0)
         {
-            if (speed < 10)
-            {
-                speed++;
-                GetComponent<Set_Data>().setSpeed(speed);
-            }
+            speed++;
+            fallTime -= Mathf.Pow(10, -((speed - 1) / 10 + 1));
+            GetComponent<Set_Data>().setSpeed(speed);
             blockLeft = maxBlockLeft;
         }
         GetComponent<Set_Data>().setTetroLeft(blockLeft);
