@@ -133,16 +133,16 @@ public class TheGrid : MonoBehaviour
             if (tag != "Wall")
             {
                 Destroy(grid[a, j].gameObject);
+                grid[a, j] = null;
                 if (tag == "Horizontal")
                 {
                     StartCoroutine(HorizontalBonus(a - 1, a + 1, j));
                 }
-                grid[a, j] = null;
             }
             // Destroy brick which is adjacency the destroyed tetromino
             if (j > 0)
             {
-                if (grid[a, j - 1] != null && tag == "Untagged")
+                if (grid[a, j - 1] != null && (tag == "Untagged" || tag == "Horizontal"))
                 {
                     if (grid[a, j - 1].CompareTag("BrickA"))
                     {
@@ -153,7 +153,7 @@ public class TheGrid : MonoBehaviour
             }
             if (j < height - 1)
             {
-                if (grid[a, j + 1] != null && tag == "Untagged")
+                if (grid[a, j + 1] != null && (tag == "Untagged" || tag == "Horizontal"))
                 {
                     if (grid[a, j + 1].CompareTag("BrickA"))
                     {
@@ -177,7 +177,7 @@ public class TheGrid : MonoBehaviour
             // Destroy brick which is adjacency the destroyed tetromino
             if (j > 0)
             {
-                if (grid[b, j - 1] != null && tag == "Untagged")
+                if (grid[b, j - 1] != null && (tag == "Untagged" || tag == "Horizontal"))
                 {
                     if (grid[b, j - 1].CompareTag("BrickA"))
                     {
@@ -188,7 +188,7 @@ public class TheGrid : MonoBehaviour
             }
             if (j < height - 1)
             {
-                if (grid[b, j + 1] != null && tag == "Untagged")
+                if (grid[b, j + 1] != null && (tag == "Untagged" || tag == "Horizontal"))
                 {
                     if (grid[b, j + 1].CompareTag("BrickA"))
                     {
@@ -223,8 +223,8 @@ public class TheGrid : MonoBehaviour
                     grid[a, j] = null;
                 }
             }
+            a--;
         }
-        a--;
         if (b < width)
         {
             if (grid[b, j] != null)
@@ -240,8 +240,8 @@ public class TheGrid : MonoBehaviour
                     grid[b, j] = null;
                 }
             }
+            b++;
         }
-        b++;
         if (a > -1 || b < width)
         {
             StartCoroutine(HorizontalBonus(a - 1, b + 1, j));
