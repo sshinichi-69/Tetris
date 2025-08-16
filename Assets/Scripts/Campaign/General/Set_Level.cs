@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -54,8 +55,10 @@ public class Set_Level : MonoBehaviour
     public void setGrid(ref Transform[,] grid, ref TheGrid.Link[] gridLink, ref string goal)
     {
         string name = (scene - 4).ToString();
-        string address = @"D:\Unity Files\Tetris\Assets\Data\" + name + ".txt";
-        string[] lines = System.IO.File.ReadAllLines(address);
+        string path = Directory.GetCurrentDirectory() + @"\Assets\Data\" + name + ".txt";
+        //string relativePath = @"..\..\..\Data" + name + ".txt";
+        //string absolutePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+        string[] lines = System.IO.File.ReadAllLines(path);
         int counter = 0;
         int gridWidth, gridHeight = -1;
         int xStart = -1;

@@ -16,8 +16,8 @@ public class ControlScenes : MonoBehaviour
         {
             isComplete[i] = false;
         }
-        LoadLevel();
         //SaveSystem.SaveData(this);
+        LoadLevel();
         if (SceneManager.GetActiveScene().buildIndex == 4)
         {
             showPassLevel();
